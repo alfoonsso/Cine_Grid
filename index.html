@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINE GRID</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Añadir estilos personalizados para el logo de Letterboxd -->
+    <style>
+        .letterboxd-icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            background-image: url('https://a.ltrbxd.com/logos/letterboxd-decal-dots-neg-rgb-500px.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="social-icons">
+            <a href="#" id="info-icon-link" title="Información"><i class="fas fa-info-circle"></i></a>
+            <a href="#" id="stats-icon-link" title="Estadísticas"><i class="fas fa-chart-bar"></i></a>
+        </div>
+        <div class="logo">CINE-GRID</div>
+        <div class="social-icons">
+            <a href="#" id="directors-mode-link" title="Modo Directores"><i class="fas fa-film"></i></a>
+            <a href="#" id="geography-mode-link" title="Modo Geografía"><i class="fas fa-globe-americas"></i></a>
+            <div class="difficulty-selector">
+                <label for="difficulty-select" class="sr-only">Seleccionar Dificultad</label>
+                <select id="difficulty-select">
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Media</option>
+                    <option value="hard">Difícil</option>
+                    <option value="total" selected>Total</option>
+                </select>
+            </div>
+            <a href="https://www.letterboxd.com/alfoonsso" target="_blank" title="Mi Letterboxd"><span class="letterboxd-icon"></span></a>
+            <a href="https://www.x.com/alfoonsso" target="_blank" title="Mi Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+    </header>
+
+    <div class="grid-container" id="grid-container">
+        <!-- La cuadrícula se generará dinámicamente con JavaScript -->
+    </div>
+
+    <div class="usability-hint" id="usability-hint">
+        <p>Haz clic en un director o categoría para más información.</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search movie...">
+        <button id="search-button"><i class="fas fa-search"></i></button>
+        <div id="search-results" class="hidden"></div>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 CINE-GRID. Desarrollado por Alfonso. Todos los derechos reservados.</p>
+            <p>
+                <a href="politica-cookies.html">Política de Cookies</a> |
+                <a href="politica-privacidad.html">Política de Privacidad</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Modales -->
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('game-over-modal')">&times;</span>
+            <h2 id="game-over-title">Game Over!</h2>
+            <p id="game-over-message">You got X/9 correct</p>
+            <div id="win-grid-display" class="win-grid-display hidden">
+                <!-- Aquí se generarán las 9 celdas verdes -->
+            </div>
+            <button class="restart-button" onclick="startNewGameFromModal('game-over-modal')">Play Again</button>
+        </div>
+    </div>
+
+    <div id="director-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('director-modal')">&times;</span>
+            <h2 id="director-modal-name">Director Name</h2>
+            <img id="director-modal-image" src="" alt="Director Headshot" style="width: 100%; max-width: 300px; display: block; margin: 10px auto;">
+        </div>
+    </div>
+
+    <div id="category-info-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('category-info-modal')">&times;</span>
+            <h2 id="category-info-title">Category Information</h2>
+            <p id="category-info-description">Detailed description of the category will go here.</p>
+        </div>
+    </div>
+
+    <div id="geography-info-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('geography-info-modal')">&times;</span>
+            <h2 id="geography-info-title">Geographical Information</h2>
+            <p id="geography-info-description">Detailed description of the region/country will go here.</p>
+        </div>
+    </div>
+
+    <!-- Importante: script.js ahora importa datos.js como módulo -->
+    <script src="datos.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

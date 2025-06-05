@@ -1,0 +1,596 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #0a1929;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Asegura el scroll vertical si es necesario */
+    padding-bottom: 120px; /* Aumenta el espacio para el footer */
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #1e3a5f;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+}
+
+.social-icons {
+    display: flex; /* Use flexbox for social icons container */
+    align-items: center; /* Align items vertically */
+}
+
+.social-icons a {
+    color: white;
+    margin: 0 10px;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: auto repeat(3, 1fr);
+    grid-template-rows: auto repeat(4, 1fr);
+    gap: 2px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.grid-cell {
+    background-color: #0a1929;
+    border: 1px solid #1e3a5f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100px;
+    padding: 10px;
+    position: relative;
+}
+
+.header-cell {
+    background-color: #0a1929;
+    font-weight: bold;
+    cursor: default; /* Default cursor for non-clickable headers */
+}
+
+.category-header, .director-header {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.category-header:hover, .director-header:hover {
+    background-color: #1e3a5f; /* A slightly lighter shade for hover */
+}
+
+.logo-cell {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+#col1, #col2, #col3 {
+    background-color: #00bcd4;
+    color: black;
+}
+
+#row1, #row2, #row3, #row4 {
+    background-color: #00bcd4;
+    color: black;
+}
+
+.content-cell {
+    transition: background-color 0.3s;
+}
+
+.content-cell:hover {
+    background-color: #1e3a5f;
+}
+
+.content-cell.filled {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.content-cell.filled::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.content-cell .movie-title {
+    position: relative;
+    z-index: 2;
+    color: white;
+    text-shadow: 1px 1px 3px black;
+    font-weight: bold;
+}
+
+.search-container {
+    margin: 20px;
+    position: relative;
+    width: 80%;
+    max-width: 500px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #1e3a5f;
+    color: white;
+}
+
+#search-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+#search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1e3a5f;
+    border-radius: 0 0 5px 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.search-result {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #0a1929;
+}
+
+.search-result:hover {
+    background-color: #2a4a6f;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Estilos para los modales */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background-color: #1e3a5f;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    color: white;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ffcc00;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.stat-label {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #0a1929;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.progress {
+    height: 100%;
+    background-color: #ffcc00;
+}
+
+/* Mejorar el buscador con scroll */
+#search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1e3a5f;
+    border-radius: 0 0 5px 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin;
+    scrollbar-color: #ffcc00 #1e3a5f;
+}
+
+/* Estilos para el contador de intentos */
+.attempts-counter {
+    margin: 10px auto;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #ffcc00;
+}
+
+.attempts-counter span {
+    font-weight: bold;
+}
+
+/* Estilos para el botón de reinicio */
+.restart-button {
+    display: block;
+    margin: 20px auto 10px;
+    padding: 10px 20px;
+    background-color: #ffcc00;
+    color: #0a1929;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.restart-button:hover {
+    background-color: #ffd633;
+}
+
+/* Estilos para las estadísticas globales */
+.global-stats {
+    margin-top: 20px;
+    border-top: 1px solid #2a4a6f;
+    padding-top: 15px;
+}
+
+.global-stats h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #ffcc00;
+}
+
+/* Estilos para la barra de desplazamiento en navegadores WebKit */
+#search-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+#search-results::-webkit-scrollbar-track {
+    background: #1e3a5f;
+}
+
+#search-results::-webkit-scrollbar-thumb {
+    background-color: #ffcc00;
+    border-radius: 4px;
+}
+
+.search-result {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #0a1929;
+    transition: background-color 0.2s;
+}
+
+.search-result:hover {
+    background-color: #2a4a6f;
+}
+
+/* Mejorar la interacción con los iconos del header */
+.social-icons a {
+    color: white;
+    margin: 0 10px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.social-icons a:hover {
+    color: #ffcc00;
+}
+
+.social-icons a.active-mode {
+    color: #ffcc00; /* Highlight color */
+    border-bottom: 2px solid #ffcc00; /* Underline to indicate active */
+    padding-bottom: 3px; /* Small padding for the underline */
+}
+
+/* Estilos para el selector de dificultad */
+.difficulty-selector {
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+}
+
+.difficulty-selector label {
+    margin-right: 5px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.difficulty-selector select {
+    background-color: #1e3a5f;
+    color: white;
+    border: 1px solid #1e3a5f;
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    -webkit-appearance: none; /* Remove default browser styling */
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M208.5%2096.5L128%20177l-80.5-80.5%2011.3-11.3L128%20154.4l69.2-69.2z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 25px; /* Make space for the custom arrow */
+}
+
+.difficulty-selector select:focus {
+    outline: none;
+    border-color: #ffcc00;
+}
+
+.difficulty-selector select option {
+    background-color: #1e3a5f;
+    color: white;
+}
+
+/* Visually hidden class for screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Estilos para el modal de información */
+.modal-content h2 {
+    color: #ffcc00;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modal-content h3 {
+    margin: 15px 0 10px;
+}
+
+.modal-content p {
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.modal-content ol {
+    margin-left: 20px;
+    line-height: 1.5;
+}
+
+.modal-content ol li {
+    margin-bottom: 5px;
+}
+
+/* Estilos para los botones en el modal */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 15px; /* Añadir espacio entre botones */
+}
+
+.restart-button, .reset-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    flex: 1; /* Hacer que ambos botones ocupen el mismo espacio */
+    text-align: center; /* Centrar el texto */
+    min-width: 160px; /* Establecer un ancho mínimo */
+}
+
+.restart-button, .reset-button {
+    background-color: #ffcc00;
+    color: #0a1929;
+}
+
+.restart-button:hover, .reset-button:hover {
+    background-color: #ffd633;
+}
+
+.reset-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.restart-button:hover {
+    background-color: #ffd633;
+}
+
+.reset-button:hover {
+    background-color: #c0392b;
+}
+
+/* Añadir al final del archivo */
+
+footer {
+    width: 100%;
+    background-color: #0a1929;
+    border-top: 1px solid #1e3a5f;
+    padding: 15px 0;
+    margin-top: 175px;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.footer-content a {
+    color: #ffcc00;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+/* Asegurar scroll en la página */
+html, body {
+    min-height: 100%;
+}
+
+body {
+    padding-bottom: 20px;
+}
+
+/* Estilos para el mensaje de usabilidad */
+.usability-hint {
+    text-align: center;
+    margin: 0px 0 10px 0; /* Reduced top margin, kept bottom margin for spacing with attempts counter */
+    color: #cccccc; /* Un color gris claro para que no sea demasiado prominente */
+    font-size: 0.9rem;
+}
+
+/* Estilos adicionales para modales (complementando los existentes) */
+.modal-content h2 {
+    color: #ffcc00;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modal-content p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Estilos para el grid de 3x3 en el modal de victoria */
+.win-grid-display {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    width: 150px; /* Tamaño ajustado para el modal */
+    height: 150px;
+    margin: 20px auto;
+}
+
+.win-grid-cell {
+    background-color: #4CAF50; /* Verde para celdas correctas */
+    border: 2px solid #0a1929; /* Borde oscuro para contraste */
+    border-radius: 5px;
+}
+
+/* Ajustes para el botón de reinicio en el modal */
+.modal-content .restart-button {
+    display: block;
+    margin: 20px auto 0; /* Centrado y con margen superior */
+}
+
+/* Ocultar por defecto */
+.hidden {
+    display: none !important; /* Usar !important para asegurar que se oculte */
+}
+/* Notification styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none; /* Allow clicks to pass through */
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.notification-container.show {
+    opacity: 1;
+}
+
+.notification-message {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
+    text-align: center;
+}
+
+.notification-message.info {
+    background-color: #2196F3; /* Blue */
+}
+
+.notification-message.error {
+    background-color: #f44336; /* Red */
+}
+
+.notification-message.success {
+    background-color: #4CAF50; /* Green */
+}
