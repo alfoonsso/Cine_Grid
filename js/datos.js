@@ -83,6 +83,81 @@ function validarTitulo(pelicula, categoria) {
     return true;
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+
+const infoDirectores = {
+  "Steven Spielberg": {activo: [1971, CURRENT_YEAR], premios: ["Oscar", "BAFTA", "Golden Globe"], generos: ["Aventura", "Drama", "Histórico", "Ciencia ficción"]},
+  "Martin Scorsese": {activo: [1967, CURRENT_YEAR], premios: ["Oscar", "BAFTA", "Golden Globe", "Cannes"], generos: ["Drama", "Crimen", "Biografía"]},
+  "Christopher Nolan": {activo: [1998, CURRENT_YEAR], premios: ["Oscar", "BAFTA", "Golden Globe"], generos: ["Sci-fi", "Drama", "Acción", "Thriller"]},
+  "Quentin Tarantino": {activo: [1992, CURRENT_YEAR], premios: ["Oscar", "BAFTA", "Cannes", "Golden Globe"], generos: ["Crimen", "Drama", "Western"]},
+  "Alfred Hitchcock": {activo: [1925, 1980], premios: ["BAFTA", "Golden Globe"], generos: ["Suspense", "Thriller", "Misterio"]},
+  "Stanley Kubrick": {activo: [1953, 1999], premios: ["BAFTA", "Golden Globe"], generos: ["Sci-fi", "Drama", "Guerra", "Terror"]},
+  "Pedro Almodóvar": {activo: [1980, CURRENT_YEAR], premios: ["Oscar", "BAFTA", "Cannes", "Goya"], generos: ["Drama", "Comedia", "Melodrama"]},
+  "Alejandro Amenábar": {activo: [1996, CURRENT_YEAR], premios: ["Oscar", "Goya", "Venecia"], generos: ["Drama", "Terror", "Thriller"]},
+  "Luis García Berlanga": {activo: [1951, 2002], premios: ["Goya", "Venecia"], generos: ["Comedia", "Sátira", "Drama"]},
+  "Álex de la Iglesia": {activo: [1993, CURRENT_YEAR], premios: ["Goya", "Venecia", "Sitges"], generos: ["Comedia", "Terror", "Thriller"]},
+};
+
+const directoresExcluidosPorCategoria = {
+  // Por cantidad de palabras en el título
+  "Título de una palabra (ignorar artículos)": ["Sergio Leone"],
+  "Título con 2 palabras": ["Sergio Leone"],
+  "Título con 3 o más palabras": ["Andrey Zvyagintsev","Alex Garland"],    
+
+  // Por letra inicial del título
+  "Empieza por vocal (ignorar artículos)": ["Guillermo del Toro","Terrence Malick","Bi Gan","Alfonso Cuarón"],
+  "Título empieza con A-H (ignorar artículos)": ["Joachim Trier","Bi Gan",],
+  "Título empieza con I-P (ignorar artículos)": [],
+  "Título empieza con Q-Z (ignorar artículos)": ["Sergio Leone"],
+
+  // Por duración de la película
+  "Título de menos de 2h de duración": [],
+
+  "Título de 2h o más de duración": ["Wes Anderson","Ernst Lubitsch","F. W. Murnau","Christian Petzold",
+    "Piotr Szulkin","Thomas Vinterberg","Paweł Pawlikowski","Quentin Dupieux","Luis Buñuel",
+    "Kamila Andini","Jonathan Glazer","Georges Méliès","Karel Zeman","Robert Bresson","Mario Bava",
+    "Nicolas Winding Refn","Buster Keaton","Alex Garland",
+  ],
+
+  // Características del título
+  "Título contiene J,K,W,Z,X,Q": [],
+  "Título con doble letra ('rr', 'll'...)": [],
+
+  // Por premios (si se decide usarlos como categoría futura)
+  "Película ganadora del Oscar": [],
+  "Película ganadora de Cannes": [],
+  "Película ganadora del Goya": [],
+  "Película nominada al BAFTA": [],
+
+  // Por año de estreno
+  "Película entre 1920 y 1940": [],
+  "Película entre 1980 y 2000": [],
+  "Película posterior a 2010": [],
+};
+
+const directoresExcluidosParejasCategoria = {
+    "Empieza por vocal (ignorar artículos) + Título empieza con Q-Z (ignorar artículos)": ["Guillermo del Toro","Greta Gerwig",],
+    "Empieza por vocal (ignorar artículos) + Título empieza con A-H (ignorar artículos)":["Bi Gan"],
+    "Título con 2 palabras + Título con 3 o más palabras" : ["Andrey Zvyagintsev"],
+    "Título con 2 palabras + Título contiene J,K,W,Z,X,Q": ["Andrey Zvyagintsev"],
+    "Título con 3 o más palabras + Título empieza con Q-Z (ignorar artículos)":["Andrey Zvyagintsev","Alex Garland"],
+    "Título con 3 o más palabras + Título empieza con I-P (ignorar artículos)":["Alex Garland",],
+    "Título con 3 o más palabras + Título contiene J,K,W,Z,X,Q":["Andrey Zvyagintsev"],
+    "Título con 3 o más palabras + Título con doble letra ('rr', 'll'...)":["Andrey Zvyagintsev","Alex Garland"],
+    "Título con 3 o más palabras + Título de 2h o más de duración":["Alex Garland"],
+    "Título con 2 palabras + Título con doble letra ('rr', 'll'...)": ["Robert Eggers",],
+    "Título con 2 palabras + Título empieza con Q-Z (ignorar artículos)": ["Sergio Leone"],
+    "Empieza por vocal (ignorar artículos) + Título de 2h o más de duración":["Jonathan Glazer","Quentin Dupieux"],
+    "Título de una palabra (ignorar artículos) + Título con 2 palabras": ["Sergio Leone"],
+    "Título de una palabra (ignorar artículos) + Título empieza con A-H (ignorar artículos)":["Greta Gerwig",],
+    "Título de una palabra (ignorar artículos) + Título empieza con Q-Z (ignorar artículos)": ["Sergio Leone"],
+    "Título empieza con A-H (ignorar artículos) + Título contiene J,K,W,Z,X,Q": ["Joachim Trier"],
+    "Título empieza con A-H (ignorar artículos) + Título con doble letra ('rr', 'll'...)":["Joachim Trier"],
+    "Título empieza con I-P (ignorar artículos) + Título de 2h o más de duración":["Jonathan Glazer","Alex Garland",],
+    "Título empieza con Q-Z (ignorar artículos) + Título de 2h o más de duración":["Robert Bresson","Alex Garland"],
+    "Título con doble letra ('rr', 'll'...) + Título de 2h o más de duración":["Alex Garland"]
+}
+
 const directoresNivelFacil = [ // 44 directores
     "Alfred Hitchcock","Akira Kurosawa", "Ingmar Bergman","Billy Wilder", "Jean-Luc Godard","Stanley Kubrick","Park Chan-wook",
     "Francis Ford Coppola", "Martin Scorsese", "Clint Eastwood", "Brian De Palma","Michael Mann","David Lynch","James Cameron",
@@ -115,7 +190,7 @@ const directoresNivelDificil = [ // 54 directores
     "Paweł Pawlikowski","Maya Deren","Kim Ki-duk","Masaki Kobayashi","Jonas Mekas","Quentin Dupieux","King Hu",
     "Nobuhiko Obayashi","Fruit Chan","Carlos Reygadas","John Woo","Trần Anh Hùng","Franco Piavoli",
     "Hiroshi Teshigahara","Takeshi Kitano","William Wyler","Aleksandr Sokurov","Kamila Andini","Satyajit Ray","Anders Thomas Jensen",
-    "Fernando Fernán Gómez","Luchino Visconti","Joao César Monteiro","Tsui Hark","Wojciech Jerzy Has","Jacques Rivette",
+    "Fernando Fernán Gómez","Luchino Visconti","João César Monteiro","Tsui Hark","Wojciech Jerzy Has","Jacques Rivette",
 ];
 
 const directoresNivelTotal = [

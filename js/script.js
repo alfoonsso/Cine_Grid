@@ -38,7 +38,7 @@ const directors = {
     'Paul Thomas Anderson': 4762, 'Terrence Malick': 30715, 'Fernando Fernán Gómez': 965, 'Luchino Visconti': 15127,
     'Manoel de Oliveira': 81749, 'Bi Gan': 1520165, 'Jia Zhangke': 24011, 'Nuri Bilge Ceylan': 265169,
     'Georges Méliès': 11523, 'Rainer Werner Fassbinder': 2725, 'Dario Argento': 4955, 'Jean-Pierre Melville': 3831,
-    'Jacques Rivette': 73153, 'Joao César Monteiro': 257772, 'Constantin Costa-Gavras': 27436, 'Glauber Rocha': 544845,
+    'Jacques Rivette': 73153, 'João César Monteiro': 257772, 'Constantin Costa-Gavras': 27436, 'Glauber Rocha': 544845,
     'Zhang Yimou': 607, 'Wim Wenders': 2303, 'Karel Zeman': 53859, 'Wojciech Jerzy Has': 27002,
     'Robert Bresson': 10346, 'Fritz Lang': 68, 'Park Chan-wook': 10099, 'Pedro Costa': 256841,
     'Krzysztof Kieślowski': 1126, 'Wong Kar-wai': 12453, 'Lars von Trier': 42, 'Mario Bava': 25826,
@@ -49,7 +49,8 @@ const directors = {
     'Neill Blomkamp': 82194, 'Gus Van Sant': 5216, 'Ryūsuke Hamaguchi': 1487492, 'Sofia Coppola': 1769,
     'Alex Garland': 2036, 'Claire Denis': 9888, 'Luca Guadagnino': 78160, 'Sean Baker': 118415,
     'Hirokazu Koreeda': 25645, 'Shunji Iwai': 55785, 'Jim Jarmusch': 4429, 'Andrzej Żuławski': 32082,
-    'Šarūnas Bartas': 109598, 'Hong Sang-soo': 150975, 'John Ford': 8500
+    'Šarūnas Bartas': 109598, 'Hong Sang-soo': 150975, 'John Ford': 8500,'Lav Diaz': 1051381,'Sergio Leone':4385,
+
 };
 
 let currentMode = 'directors'; // 'directors' or 'geography'
@@ -206,8 +207,11 @@ function startNewGame() {
     gameState.filledCells = {};
     gameState.remainingAttempts = 3;
     gameState.gameInProgress = true;
-    
-    // Seleccionar directores/países/regiones aleatorios para el juego
+
+    // Seleccionar categorías aleatorias primero (importante para validar luego)
+    gameState.selectedCategories = getRandomElements(categoriasColumnas, 3);
+
+    // Selección según el modo
     if (currentMode === 'directors') {
         let directorsPool;
         switch (currentDifficulty) {
@@ -225,35 +229,38 @@ function startNewGame() {
                 directorsPool = directoresNivelTotal;
                 break;
         }
+
+        const categorias = gameState.selectedCategories;
+
+        // Filtrar por compatibilidad
+        let directoresCompatibles = directorsPool.filter(d => esDirectorCompatible(d, categorias));
+
+        if (directoresCompatibles.length < 3) {
+            console.warn("Muy pocos directores compatibles. Usando pool completo.");
+            directoresCompatibles = directorsPool;
+        }
+
+        gameState.selectedDirectors = getRandomElements(directoresCompatibles, 3);
         console.log(`Selected difficulty: ${currentDifficulty}`);
         console.log(`Directors pool size: ${directorsPool.length}`);
-        gameState.selectedDirectors = getRandomElements(directorsPool, 3);
     } else if (currentMode === 'geography') {
-        // Combine countries and regions for selection
         const combinedGeographyCategories = [...categoriaPaises, ...categoriaRegiones];
         console.log(`Selected mode: geography`);
         console.log(`Geography categories pool size: ${combinedGeographyCategories.length}`);
         gameState.selectedDirectors = getRandomElements(combinedGeographyCategories, 3);
     }
-    
-    // Seleccionar categorías aleatorias para el juego
-    gameState.selectedCategories = getRandomElements(categoriasColumnas, 3);
-    
+
     console.log('Selected Directors:', gameState.selectedDirectors);
     console.log('Selected Categories:', gameState.selectedCategories);
 
-    // Incrementar contador de partidas jugadas solo si es una nueva partida
-    // y no un reinicio desde el modal de estadísticas
+    // Contador de partidas
     if (!document.querySelector('.modal')) {
         gameStats.gamesPlayed++;
         saveStats();
     }
-    
-    // Generar la cuadrícula
+
     generateGrid();
     initializeGrid();
-    
-    // Actualizar contador de intentos en la interfaz
     updateAttemptsCounter();
 }
 
@@ -825,6 +832,26 @@ function setupHeaderFunctionality() {
         });
     }
 }
+
+function esDirectorCompatible(director, categorias) {
+  // 1. Rechazar si alguna categoría está explícitamente vetada
+  for (const cat of categorias) {
+    const excluidos = directoresExcluidosPorCategoria[cat];
+    if (excluidos && excluidos.includes(director)) return false;
+  }
+
+  // 2. Rechazar si el par de categorías tiene una exclusión combinada
+  for (let i = 0; i < categorias.length; i++) {
+    for (let j = i + 1; j < categorias.length; j++) {
+      const combinacion = `${categorias[i]} + ${categorias[j]}`;
+      const excluidos = directoresExcluidosParejasCategoria[combinacion];
+      if (excluidos && excluidos.includes(director)) return false;
+    }
+  }
+
+  return true;
+}
+
 
 // Mostrar modal de información
 function showInfoModal() {
