@@ -6,7 +6,7 @@ const PERSON_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w300_and_h450_bestv2';
 
 // Mapeo de directores a sus IDs en TMDB
 const directors = {
-    'Steven Spielberg': 488, 'Martin Scorsese': 1032,
+    'Steven Spielberg': 488, 'Martin Scorsese': 1032,'Louis Feuillade':102844,
     'Christopher Nolan': 525, 'Quentin Tarantino': 138, 'Alfred Hitchcock': 2636, 'Stanley Kubrick': 240,
     'Pedro Almodóvar': 309, 'Alejandro Amenábar': 19840, 'Luis García Berlanga': 37493, 'Álex de la Iglesia': 57865,
     'Rodrigo Sorogoyen': 96690, 'Akira Kurosawa': 5026, 'Ingmar Bergman': 6648, 'Federico Fellini': 4415,
@@ -27,7 +27,7 @@ const directors = {
     'Billy Wilder': 3146, 'Sergei Eisenstein': 9603, 'Pablo Larraín': 225009, 'Ben Affleck': 880,
     'Guy Ritchie': 956, 'Rob Reiner': 3026, 'Andrei Tarkovsky': 8452, 'Peter Greenaway': 30309,
     'David Lean': 12238, 'Paweł Pawlikowski': 64194, 'Leos Carax': 27977, 'Maya Deren': 96813,"Damien Chazelle": 136495,
-    'Jean-Luc Godard': 3776, 'Kim Ki-duk': 1188, 'Masaki Kobayashi': 76978, 'Jonas Mekas': 1092208,
+    'Jean-Luc Godard': 3776, 'Masaki Kobayashi': 76978, 'Jonas Mekas': 1092208,
     'Quentin Dupieux': 133398, 'Greta Gerwig': 45400, 'Agnès Varda': 6817, 'Luis Buñuel': 793,"Frank Capra": 2662,
     'Miloš Forman': 3974, 'Nobuhiko Obayashi': 132305, 'Fruit Chan': 56865, 'Carlos Reygadas': 20660,
     'John Woo': 11401, 'Ridley Scott': 578, 'Hayao Miyazaki': 608, 'Trần Anh Hùng': 107730,"David Fincher": 7467,
@@ -36,20 +36,21 @@ const directors = {
     'Aleksandr Sokurov': 107762, 'Edward Yang': 143035, 'Anders Thomas Jensen': 1012, 'Kamila Andini': 1515263,
     'Satyajit Ray': 12160 , 'Zack Snyder': 15217, 'Joachim Trier': 71609, 'Jonathan Glazer': 66728,
     'Paul Thomas Anderson': 4762, 'Terrence Malick': 30715, 'Fernando Fernán Gómez': 965, 'Luchino Visconti': 15127,
-    'Manoel de Oliveira': 81749, 'Bi Gan': 1520165, 'Jia Zhangke': 24011, 'Nuri Bilge Ceylan': 265169,
+    'Manoel de Oliveira': 81749, 'Bi Gan': 1520165, 'Jia Zhangke': 24011, 'Nuri Bilge Ceylan': 56214,
     'Georges Méliès': 11523, 'Rainer Werner Fassbinder': 2725, 'Dario Argento': 4955, 'Jean-Pierre Melville': 3831,
     'Jacques Rivette': 73153, 'João César Monteiro': 257772, 'Constantin Costa-Gavras': 27436, 'Glauber Rocha': 544845,
     'Zhang Yimou': 607, 'Wim Wenders': 2303, 'Karel Zeman': 53859, 'Wojciech Jerzy Has': 27002,
     'Robert Bresson': 10346, 'Fritz Lang': 68, 'Park Chan-wook': 10099, 'Pedro Costa': 256841,
     'Krzysztof Kieślowski': 1126, 'Wong Kar-wai': 12453, 'Lars von Trier': 42, 'Mario Bava': 25826,
     'Michelangelo Antonioni': 15189, 'Darren Aronofsky': 6431, 'Yorgos Lanthimos': 122423, 'M. Night Shyamalan': 11614,
-    'Apichatpong Weerasethakul': 69759, 'James Cameron': 2710, 'Nicolas Winding Refn': 21183, 'Joel Coen': 1223,
+    'Apichatpong Weerasethakul': 69759, 'James Cameron': 2710, 'Nicolas Winding Refn': 21183, 'Joel Coen': 1223,    
     'Abbas Kiarostami': 119294, 'Werner Herzog': 6818, 'Buster Keaton': 8635, 'Hou Hsiao-hsien': 64992,
     'Tsai Ming-liang': 71174, 'Béla Tarr': 85637, 'Kenji Mizoguchi': 97202, 'Alfonso Cuarón': 11218,
     'Neill Blomkamp': 82194, 'Gus Van Sant': 5216, 'Ryūsuke Hamaguchi': 1487492, 'Sofia Coppola': 1769,
     'Alex Garland': 2036, 'Claire Denis': 9888, 'Luca Guadagnino': 78160, 'Sean Baker': 118415,
     'Hirokazu Koreeda': 25645, 'Shunji Iwai': 55785, 'Jim Jarmusch': 4429, 'Andrzej Żuławski': 32082,
     'Šarūnas Bartas': 109598, 'Hong Sang-soo': 150975, 'John Ford': 8500,'Lav Diaz': 1051381,'Sergio Leone':4385,
+    'Pier Paolo Pasolini':5970,'Hlynur Pálmason':1292227
 
 };
 
@@ -108,15 +109,15 @@ function updateModeVisuals() {
 
 // Mapeo de descripciones para categorías de columnas
 const categoryDescriptions = {
-    "Título empieza con A-H (ignorar artículos)": "Nombra una película cuyo título (ignorando artículos como 'The', 'A', 'An') empiece con A, B, C, D, E, F, G o H. Si el título empieza con un número, se considera la primera letra alfabética. Ejemplos: 'The Avengers', 'A Beautiful Mind', '13 Assassins' (se considera 'A' de 'Assassins').",
-    "Título empieza con I-P (ignorar artículos)": "Nombra una película cuyo título (ignorando artículos como 'The', 'A', 'An') empiece con I, J, K, L, M, N, O o P. Si el título empieza con un número, se considera la primera letra alfabética. Ejemplos: 'The Imitation Game', 'A Man Called Otto', '21 Jump Street' (se considera 'J' de 'Jump').",
-    "Título empieza con Q-Z (ignorar artículos)": "Nombra una película cuyo título (ignoring articles like 'The', 'A', 'An') empiece con Q, R, S, T, U, V, W, X, Y o Z. Si el título empieza con un número, se considera la primera letra alfabética. Ejemplos: 'The Wolf of Wall Street', 'A Touch of Sin', 'The 40 Year Old Virgin' (se considera 'Y' de 'Year').",
+    "Título empieza con A-H (ignorar 'The')": "Nombra una película cuyo título (ignorando el artículo 'The') empiece con A, B, C, D, E, F, G o H. Si el título empieza con un número, se considera la primera letra alfabética. Ejemplos: 'The Avengers', '13 Assassins' (se considera 'A' de 'Assassins').",
+    "Título empieza con I-P (ignorar 'The','A','An')": "Nombra una película cuyo título (ignorando artículos como 'The', 'A', 'An') empiece con I, J, K, L, M, N, O o P. Si el título empieza con un número, se considera la primera letra alfabética. Ejemplos: 'The Imitation Game', 'A Man Called Otto', '21 Jump Street' (se considera 'J' de 'Jump').",
+    "Título empieza con Q-Z (ignorar 'A','An')": "Nombra una película cuyo título (ignorando artículos como 'A', 'An') empiece con Q, R, S, T, U, V, W, X, Y o Z. Si el título empieza con un número, se considera la primera letra alfabética. Ejemplos: 'A Touch of Sin'.",
     "Título contiene J,K,W,Z,X,Q": "Nombra una película cuyo título contenga al menos una de estas letras: J, K, W, Z, X, Q. Ejemplos: 'The Dark Knight', 'An American Werewolf in London'.",
     "Título con 2 palabras": "Nombra una película cuyo título tenga exactamente dos palabras. Ejemplos: 'Holy Motors', 'Robin Hood'.",
     "Título con doble letra ('rr', 'll'...)": "Nombra una película cuyo título contenga una letra doble consecutiva (ej. 'rr', 'll', 'ee'). Ejemplos: 'Resurrection', 'The Odyssey'.",
     "Título con 3 o más palabras": "Nombra una película cuyo título tenga tres o más palabras. Ejemplo: 'The Matrix Reloaded'.",
     "Título de una palabra (ignorar artículos)": "Nombra una película cuyo título (ignoring articles like 'The', 'A', 'An') sea de una sola palabra. Ejemplo: 'The Idiots'.",
-    "Empieza por vocal (ignorar artículos)": "Nombra una película cuyo título (ignoring articles like 'The', 'A', 'An') empiece por una vocal (A, E, I, O, U). Ejemplos: 'The Expendables', 'An American Werewolf in London'.",
+    "Empieza por vocal (ignorar 'The')": "Nombra una película cuyo título (ignoring articles like 'The') empiece por una vocal (A, E, I, O, U). Ejemplos: 'The Expendables'.",
     "Título de menos de 2h de duración": "Nombra una película que tenga una duración inferior a 2 horas (120 minutos). Ejemplo: 'The Merry Frolics of Satan'.",
     "Título de 2h o más de duración": "Nombra una película que tenga una duración de 2 horas (120 minutos) o más. Ejemplo: 'Mountains May Depart'.",
 };
@@ -147,6 +148,77 @@ for (const countryName in paises) {
 }
 // Cache para detalles de películas
 const movieDetailsCache = {};
+
+// Función utilitaria que devuelve todos los géneros únicos
+function obtenerGenerosDisponibles(infoDirectores) {
+    const set = new Set();
+    for (const datos of Object.values(infoDirectores)) {
+        datos.generos.forEach(g => set.add(g));
+    }
+    return Array.from(set);
+}
+
+// Devuelve directores que tienen ese género en su lista
+function obtenerDirectoresPorGenero(infoDirectores, genero) {
+    return Object.entries(infoDirectores)
+        .filter(([_, datos]) => datos.generos.includes(genero))
+        .map(([nombre]) => nombre);
+}
+
+function seleccionarGeneroYDirectores(infoDirectores) {
+    const generos = obtenerGenerosDisponibles(infoDirectores);
+    const generoAleatorio = generos[Math.floor(Math.random() * generos.length)];
+
+    let directores = obtenerDirectoresPorGenero(infoDirectores, generoAleatorio);
+
+    // Asegura al menos 3 directores que lo trabajen
+    if (directores.length < 3) return seleccionarGeneroYDirectores(infoDirectores);
+
+    // Aleatoriza y reduce a 3
+    directores = directores.sort(() => Math.random() - 0.5).slice(0, 3);
+
+    return { genero: generoAleatorio, directores };
+}
+
+function esDirectorCompatible(director, categorias) {
+    const info = infoDirectores[director];
+    if (!info || !info.generos) return false;
+
+    for (let categoria of categorias) {
+        const isGenero = Object.values(infoDirectores).some(d => d.generos.includes(categoria));
+        if (isGenero && !info.generos.includes(categoria)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function seleccionarCategoriasConGeneroControlado() {
+    const maxIntentos = 5;
+    for (let intento = 0; intento < maxIntentos; intento++) {
+        // Selecciona aleatoriamente 0 o 1 géneros
+        const incluirGenero = Math.random() < 0.5; // 50% de probabilidad de incluir género
+        const generosSeleccionados = incluirGenero
+            ? getRandomElements(generosUnicos, 1)
+            : [];
+
+        const numColumnasNormales = 3 - generosSeleccionados.length;
+        const categoriasSeleccionadas = [
+            ...getRandomElements(categoriasColumnas, numColumnasNormales),
+            ...generosSeleccionados
+        ];
+
+        const directoresFiltrados = directoresNivelTotal.filter(d => esDirectorCompatible(d, categoriasSeleccionadas));
+
+        // Si hay suficientes directores compatibles, lo damos por válido
+        if (directoresFiltrados.length >= 10) {
+            return categoriasSeleccionadas;
+        }
+    }
+
+    // Si después de varios intentos no hay suficientes directores compatibles, no usamos género
+    return getRandomElements(categoriasColumnas, 3);
+}
 
 // Estado del juego
 const gameState = {
@@ -208,8 +280,16 @@ function startNewGame() {
     gameState.remainingAttempts = 3;
     gameState.gameInProgress = true;
 
-    // Seleccionar categorías aleatorias primero (importante para validar luego)
-    gameState.selectedCategories = getRandomElements(categoriasColumnas, 3);
+    const categoriasFijas = categoriasColumnas;
+    const generosDisponibles = obtenerGenerosDisponibles(infoDirectores);
+
+    // Elegimos 1 género al azar
+    const generoAleatorio = getRandomElements(generosDisponibles, 1)[0];
+
+    // Elegimos 2 categorías normales
+    const categoriasNormales = getRandomElements(categoriasFijas, 2);
+
+    gameState.selectedCategories = seleccionarCategoriasConGeneroControlado();
 
     // Selección según el modo
     if (currentMode === 'directors') {
@@ -335,8 +415,10 @@ async function tryPlaceMovie(movie) {
     console.log("Columna Categoría:", categoryName);
     
     // Verificar si la película cumple con el criterio de la columna
-    const meetsCategoryCriteria = validarTitulo(fullMovieDetails, categoryName); // Pass fullMovieDetails
-    console.log("¿Cumple criterio de categoría?", meetsCategoryCriteria);
+    const directorExists = infoDirectores.hasOwnProperty(rowCategoryName);
+    const meetsCategoryCriteria = directorExists
+    ? validarTitulo(fullMovieDetails, categoryName, rowCategoryName)
+    : validarTitulo(fullMovieDetails, categoryName);
     
     let meetsRowCriteria = false;
     if (currentMode === 'directors') {
@@ -832,26 +914,6 @@ function setupHeaderFunctionality() {
         });
     }
 }
-
-function esDirectorCompatible(director, categorias) {
-  // 1. Rechazar si alguna categoría está explícitamente vetada
-  for (const cat of categorias) {
-    const excluidos = directoresExcluidosPorCategoria[cat];
-    if (excluidos && excluidos.includes(director)) return false;
-  }
-
-  // 2. Rechazar si el par de categorías tiene una exclusión combinada
-  for (let i = 0; i < categorias.length; i++) {
-    for (let j = i + 1; j < categorias.length; j++) {
-      const combinacion = `${categorias[i]} + ${categorias[j]}`;
-      const excluidos = directoresExcluidosParejasCategoria[combinacion];
-      if (excluidos && excluidos.includes(director)) return false;
-    }
-  }
-
-  return true;
-}
-
 
 // Mostrar modal de información
 function showInfoModal() {
