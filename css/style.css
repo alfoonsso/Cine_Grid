@@ -2350,3 +2350,19 @@ footer {
 .menu-screen .menu-button:last-of-type {
     margin-bottom: 25px; /* Espacio extra abajo del último botón */
 }
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+    footer {
+        position: absolute; /* Cambiar a posición relativa en pantallas pequeñas */
+        margin-top: 100px; /* Añadir margen superior para empujar hacia abajo */
+    }
+    
+    .version-info {
+        margin-top: 5rem; /* Reducir el margen superior en pantallas pequeñas */
+    }
+    
+    body {
+        padding-bottom: 150px; /* Añadir padding inferior al body para asegurar espacio para el footer */
+    }
+}

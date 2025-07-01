@@ -1,7 +1,7 @@
 import { gameState, gameStats, currentMode, currentDifficulty, resetGameState } from './gameState.js';
 import { getRandomElements } from './dataManager.js';
 import { generateGrid, initializeGrid } from './gridManager.js';
-import { updateAttemptsCounter, updateScoreDisplay, updateMaxScoreDisplay, showMessage } from './uiHelpers.js';
+import { updateAttemptsCounter, updateScoreDisplay, updateMaxScoreDisplay, showMessage, showStatsModal } from './uiHelpers.js';
 import { saveStats } from './storageManager.js';
 import { updateUserBestScore } from './movieValidator.js';
 import { showStartMenu } from './menuManager.js';
@@ -358,4 +358,10 @@ export function endGame(completed) {
     
     saveStats();
     console.log(completed ? "Game completed!" : "Game ended.");
+    
+    // Mostrar el modal de estadísticas al finalizar el juego
+    // Pequeño retraso para que el mensaje se muestre primero
+    setTimeout(() => {
+        showStatsModal();
+    }, 1000);
 }
