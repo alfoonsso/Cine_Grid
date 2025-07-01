@@ -1,8 +1,10 @@
 import { gameState, setCurrentMode, setCurrentDifficulty, currentDifficulty } from './gameState.js';
-import { startNewGame, endGame } from './gameLogic.js'; // Agregar endGame aquí
-import { saveGameSettings } from './storageManager.js';
+import { startNewGame } from './gameLogic.js'; // Eliminamos endGame ya que no lo usaremos directamente
+import { saveGameSettings, saveStats } from './storageManager.js';
 import { showMessage, showInfoModal, showStatsModal, updateModeVisuals } from './uiHelpers.js';
 import { setupStartMenuButtons } from './menuManager.js';
+import { showConfirmModal } from './modalManager.js';
+import { updateUserBestScore } from './movieValidator.js';
 
 export function setupEventListeners() {
     setupHeaderFunctionality();
@@ -42,14 +44,19 @@ function setupHeaderFunctionality() {
                 return;
             }
             if (gameState.gameInProgress) {
-                if (!confirm('Una partida está en curso. ¿Deseas empezar una nueva partida en Modo Directores?')) {
-                    return;
-                }
+                // Reemplazar el confirm por el modal de confirmación
+                showConfirmModal('Una partida está en curso. ¿Deseas empezar una nueva partida en Modo Directores?', () => {
+                    setCurrentMode('directors');
+                    saveGameSettings();
+                    updateModeVisuals();
+                    startNewGame();
+                });
+            } else {
+                setCurrentMode('directors');
+                saveGameSettings();
+                updateModeVisuals();
+                startNewGame();
             }
-            setCurrentMode('directors');
-            saveGameSettings();
-            updateModeVisuals();
-            startNewGame();
         });
     }
 
@@ -61,16 +68,23 @@ function setupHeaderFunctionality() {
                 return;
             }
             if (gameState.gameInProgress) {
-                if (!confirm('Una partida está en curso. ¿Deseas empezar una nueva partida en Modo Geografía?')) {
-                    return;
-                }
+                // Reemplazar el confirm por el modal de confirmación
+                showConfirmModal('Una partida está en curso. ¿Deseas empezar una nueva partida en Modo Geografía?', () => {
+                    setCurrentMode('geography');
+                    setCurrentDifficulty('total');
+                    if (difficultySelect) difficultySelect.value = 'total';
+                    saveGameSettings();
+                    updateModeVisuals();
+                    startNewGame();
+                });
+            } else {
+                setCurrentMode('geography');
+                setCurrentDifficulty('total');
+                if (difficultySelect) difficultySelect.value = 'total';
+                saveGameSettings();
+                updateModeVisuals();
+                startNewGame();
             }
-            setCurrentMode('geography');
-            setCurrentDifficulty('total');
-            if (difficultySelect) difficultySelect.value = 'total';
-            saveGameSettings();
-            updateModeVisuals();
-            startNewGame();
         });
     }
 
@@ -82,14 +96,21 @@ function setupHeaderFunctionality() {
                 return;
             }
             if (gameState.gameInProgress) {
-                if (!confirm('Una partida está en curso. ¿Deseas empezar una nueva partida con la nueva dificultad?')) {
+                // Reemplazar el confirm por el modal de confirmación
+                showConfirmModal('Una partida está en curso. ¿Deseas empezar una nueva partida con la nueva dificultad?', () => {
+                    setCurrentDifficulty(e.target.value);
+                    saveGameSettings();
+                    startNewGame();
+                });
+                // Si el usuario cancela, restaurar el valor anterior
+                document.getElementById('confirm-no').addEventListener('click', () => {
                     e.target.value = currentDifficulty;
-                    return;
-                }
+                }, { once: true });
+            } else {
+                setCurrentDifficulty(e.target.value);
+                saveGameSettings();
+                startNewGame();
             }
-            setCurrentDifficulty(e.target.value);
-            saveGameSettings();
-            startNewGame();
         });
     }
 
@@ -109,22 +130,33 @@ function setupHeaderFunctionality() {
     }
 }
 
-// Remove this empty function:
-// function setupStartMenuButtons() {
-//     // This function will be imported from menuManager.js
-//     // We're just calling it here to maintain the setup flow
-// }
-
 // Agregar esta nueva función al final del archivo
+// Modificar la función setupGameControlsListeners
 function setupGameControlsListeners() {
     const giveUpButton = document.getElementById('give-up-button');
     
     if (giveUpButton) {
         giveUpButton.addEventListener('click', () => {
             if (gameState.gameInProgress) {
-                if (confirm('¿Estás seguro de que quieres rendirte? Se terminará la partida actual.')) {
-                    endGame(false); // Terminar el juego como perdido
-                }
+                showConfirmModal('¿Estás seguro de que quieres rendirte? Se terminará la partida actual.', () => {
+                    // En lugar de llamar a endGame directamente, actualizamos el estado del juego
+                    // y mostramos el modal de estadísticas
+                    gameState.gameInProgress = false;
+                    
+                    // Actualizar mejor puntuación si hay puntuación
+                    if (gameState.currentScore > 0) {
+                        updateUserBestScore(gameState.currentScore);
+                    }
+                    
+                    // Guardar estadísticas
+                    saveStats();
+                    
+                    // Mostrar mensaje
+                    showMessage('Se acabaron los intentos. ¡Inténtalo de nuevo!', 'error', 5000);
+                    
+                    // Mostrar modal de estadísticas
+                    showStatsModal();
+                });
             }
         });
     }

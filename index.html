@@ -28,10 +28,8 @@
         </div>
         <div class="logo" id="logo-link" style="cursor: pointer;" title="Volver al menú principal">CINE-GRID</div>
         <div class="social-icons">
-            <!-- Mode and difficulty are part of header functionality but handled by JS clicks -->
-            <a href="#" id="geography-mode-link" title="Modo Geografía"><i class="fas fa-globe-americas"></i></a>
-            <a href="#" id="directors-mode-link" title="Modo Directores"><i class="fas fa-film"></i></a>
             <div class="difficulty-selector">
+                <span class="difficulty-label">Dificultad:&nbsp;&nbsp;</span>
                 <label for="difficulty-select" class="sr-only">Seleccionar Dificultad</label>
                 <select id="difficulty-select">
                     <option value="easy">Fácil</option>
@@ -99,7 +97,15 @@
     </footer>
 
     <!-- Modales -->
-    <!-- ... (Keep your existing modal HTML structures here, same as before) ... -->
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="confirm-modal-message">¿Estás seguro?</h2>
+            <div class="button-container">
+                <button id="confirm-yes" class="restart-button">Sí</button>
+                <button id="confirm-no" class="reset-button">No</button>
+            </div>
+        </div>
+    </div>
      <div id="stats-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-button">×</span>
