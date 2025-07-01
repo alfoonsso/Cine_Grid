@@ -18,7 +18,8 @@ export async function startNewGame() {
     updateScoreDisplay();
     updateMaxScoreDisplay();
     
-    gameStats.gamesPlayed++;
+    // Eliminar esta línea:
+    // gameStats.gamesPlayed++;
     
     // Reemplazar isDataLoaded() con gameState.dataLoaded
     if (!gameState.dataLoaded) {
@@ -341,13 +342,11 @@ async function validateCategorySelection(selectedRowCategories, selectedColCateg
 }
 */
 
-export function endGame(completed) {
+export function endGame(completed = false) {
     gameState.gameInProgress = false;
     
-    // Always update best score if there's a score
-    if (gameState.currentScore > 0) {
-        updateUserBestScore(gameState.currentScore);
-    }
+    // Incrementar el contador de juegos jugados aquí
+    gameStats.gamesPlayed++;
     
     if (completed) {
         gameStats.gamesCompleted++;
@@ -358,6 +357,11 @@ export function endGame(completed) {
     
     saveStats();
     console.log(completed ? "Game completed!" : "Game ended.");
+    
+    // Always update best score if there's a score
+    if (gameState.currentScore > 0) {
+        updateUserBestScore(gameState.currentScore);
+    }
     
     // Mostrar el modal de estadísticas al finalizar el juego
     // Pequeño retraso para que el mensaje se muestre primero

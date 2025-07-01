@@ -1,4 +1,4 @@
-import { gameState, setCurrentMode, setCurrentDifficulty, currentDifficulty } from './gameState.js';
+import { gameState, gameStats, setCurrentMode, setCurrentDifficulty, currentDifficulty } from './gameState.js';
 import { startNewGame } from './gameLogic.js'; // Eliminamos endGame ya que no lo usaremos directamente
 import { saveGameSettings, saveStats } from './storageManager.js';
 import { showMessage, showInfoModal, showStatsModal, updateModeVisuals } from './uiHelpers.js';
@@ -142,6 +142,9 @@ function setupGameControlsListeners() {
                     // En lugar de llamar a endGame directamente, actualizamos el estado del juego
                     // y mostramos el modal de estadísticas
                     gameState.gameInProgress = false;
+
+                    // Incrementar el contador de juegos jugados
+                    gameStats.gamesPlayed++;
                     
                     // Actualizar mejor puntuación si hay puntuación
                     if (gameState.currentScore > 0) {

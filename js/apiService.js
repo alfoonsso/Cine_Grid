@@ -178,8 +178,10 @@ export class ApiService {
         const titleForLengthCheck = tituloOriginal.trim().replace(/, The$/, '').replace(/, A$/, '').replace(/, An$/, ''); // Handle common TMDB format "Title, The" for word count
         const titleForLetterCheck = articuloRegex ? tituloOriginal.replace(articuloRegex, "").trim() : tituloOriginal.trim();
 
-
-        const wordsForLength = titleForLengthCheck.split(/\s+/).filter(word => word.length > 0);
+        // Modificar esta línea para usar titleForLetterCheck en lugar de titleForLengthCheck para el criterio de una palabra
+        const wordsForLength = categoriaNombre.trim() === "Título de una palabra (ignorar artículos)" ? 
+            titleForLetterCheck.split(/\s+/).filter(word => word.length > 0) : 
+            titleForLengthCheck.split(/\s+/).filter(word => word.length > 0);
          const wordsForLetter = titleForLetterCheck.split(/\s+/).filter(word => word.length > 0);
 
 
