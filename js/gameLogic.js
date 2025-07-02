@@ -65,12 +65,26 @@ export async function startNewGame() {
 }
 
 // Cambiar esta función de:
-async function selectGameCategories() {
-    const numNormalCols = 2;
-    const numGenreCols = 1;
+async function selectGameCategories(retryCount = 0) {
+    // Limitar el número de reintentos
+    const MAX_RETRIES = 5;
+    if (retryCount >= MAX_RETRIES) {
+        console.error(`Reached maximum retries (${MAX_RETRIES}) for category selection.`);
+        showMessage("Error: No se pudieron seleccionar categorías compatibles después de varios intentos.", "error", 5000);
+        return false;
+    }
+    
+    // Determinar aleatoriamente si incluir un género o no
+    const randomValue = Math.random();
+    const includeGenre = randomValue > 0.7; // 30% de probabilidad de incluir género
+    
+    console.log(`Generación de categorías - Valor aleatorio: ${randomValue}, Incluir género: ${includeGenre}`);
+    
+    const numNormalCols = includeGenre ? 2 : 3; // Si no hay género, usamos 3 criterios normales
+    const numGenreCols = includeGenre ? 1 : 0; // 0 o 1 columnas de género
 
     if (gameState.allPossibleCriteria.length < numNormalCols || 
-        gameState.allPossibleGenres.length < numGenreCols) {
+        (includeGenre && gameState.allPossibleGenres.length < numGenreCols)) {
         console.error("Insufficient criteria or genres available.");
         showMessage("Error interno: No hay suficientes categorías para iniciar el juego.", "error", 15000);
         return false;
@@ -78,15 +92,38 @@ async function selectGameCategories() {
 
     // Select columns
     const selectedNormalCols = getRandomElements(gameState.allPossibleCriteria, numNormalCols);
-    const selectedGenreCols = selectGenreColumns(numGenreCols);
+    let selectedGenreCols = [];
     
-    if (!selectedGenreCols || selectedGenreCols.length === 0) {
-        return false;
+    if (includeGenre) {
+        selectedGenreCols = selectGenreColumns(numGenreCols);
+        if (!selectedGenreCols || selectedGenreCols.length === 0) {
+            return false;
+        }
     }
 
     // Select rows
-    const possibleRowCategories = selectRowCategories(selectedGenreCols[0]);
+    let possibleRowCategories;
+    if (includeGenre) {
+        possibleRowCategories = await selectRowCategories(selectedGenreCols[0]);
+    } else {
+        // Si no hay género, seleccionamos filas sin filtrar por género
+        if (currentMode === 'directors') {
+            possibleRowCategories = gameState.allPossibleDirectors.filter(cat =>
+                currentDifficulty === 'total' ? true : (cat.difficulty === currentDifficulty)
+            );
+            // Asegurarse de que hay suficientes directores compatibles con los criterios
+            possibleRowCategories = await filterDirectorsByColumnCompatibility(possibleRowCategories);
+        } else if (currentMode === 'geography') {
+            possibleRowCategories = [...gameState.allPossibleCountries, ...gameState.allPossibleRegions];
+        }
+    }
+    
     if (!possibleRowCategories || possibleRowCategories.length < 3) {
+        console.warn(`No hay suficientes categorías de fila disponibles (${possibleRowCategories?.length || 0}). Reintentando con género.`);
+        // Si no hay suficientes categorías sin género, intentar con género
+        if (!includeGenre) {
+            return selectGameCategories(); // Reintentar (podría seleccionar con género la próxima vez)
+        }
         return false;
     }
 
@@ -98,16 +135,15 @@ async function selectGameCategories() {
         cols: gameState.selectedColCategories.map(cat => `${cat.nombre} (${cat.tipo})`)
     });
 
-    // Después de seleccionar categorías, validar conflictos
-    // Comentar estas líneas que causan los errores:
-    // import { apiService } from './apiService.js';
+    // Validar conflictos entre directores y criterios
+    const conflicts = await validateCategorySelection(gameState.selectedRowCategories, gameState.selectedColCategories);
     
-    // Comentar también estas líneas que usan 'conflicts':
-    // if (conflicts.length > 0) {
-    //     console.warn('Conflictos detectados:', conflicts);
-    //     // Reseleccionar categorías o mostrar advertencia
-    //     return selectGameCategories(); // Reintentar
-    // }
+    if (conflicts.length > 0) {
+        console.warn('Conflictos detectados:', conflicts);
+        // En lugar de reseleccionar categorías, simplemente continuamos con el grid
+        // Esto permitirá que el juego se genere incluso con combinaciones imposibles
+        console.warn('Continuando con el grid a pesar de los conflictos detectados');
+    }
     
     return true;
 }
@@ -184,7 +220,7 @@ function selectGenreColumns(numGenreCols) {
     return selectedGenreCols;
 }
 
-function selectRowCategories(selectedGenre) {
+async function selectRowCategories(selectedGenre) {
     let possibleRowCategories = [];
     
     if (currentMode === 'directors') {
@@ -205,9 +241,9 @@ function selectRowCategories(selectedGenre) {
             return matchesDifficulty && hasSelectedGenre;
         });
 
-        // Cambiar esta línea que causa el error:
-        possibleRowCategories = candidateDirectors;
-        // possibleRowCategories = await filterDirectorsByColumnCompatibility(candidateDirectors);
+        // Cambiar esta línea para usar filterDirectorsByColumnCompatibility
+        // possibleRowCategories = candidateDirectors;
+        possibleRowCategories = await filterDirectorsByColumnCompatibility(candidateDirectors);
 
         // Ensure we have at least 3 directors compatible with the selected genre and difficulty
         if (possibleRowCategories.length < 3) {
@@ -296,51 +332,47 @@ async function checkDirectorHasMovieForCategory(director, category) {
 }
 
 // Función mejorada para detectar conflictos de categorías
-/*
 async function validateCategorySelection(selectedRowCategories, selectedColCategories) {
     const conflicts = [];
     
-    for (const director of selectedRowCategories) {
-        const directorMovies = await apiService.getDirectorMovies(director.tmdb_id);
-        const categoriesFulfilled = [];
-        
-        // Verificar qué categorías puede cumplir este director
-        for (const category of selectedColCategories) {
-            const hasMovieForCategory = await checkDirectorHasMovieForCategory(directorMovies, category);
-            if (hasMovieForCategory) {
-                categoriesFulfilled.push(category.nombre);
-            }
-        }
-        
-        // Si el director solo puede cumplir una categoría, verificar si esa película cubre múltiples
-        if (categoriesFulfilled.length === 1) {
-            const singleCategoryMovies = await getMoviesForCategory(directorMovies, selectedColCategories.find(cat => cat.nombre === categoriesFulfilled[0]));
-            
-            // Verificar si alguna de estas películas también cumple otras categorías
-            for (const movie of singleCategoryMovies) {
-                const fullMovieDetails = await apiService.getMovieDetails(movie.id);
-                let categoriesThisMovieFulfills = 0;
-                
-                for (const category of selectedColCategories) {
-                    if (apiService.validarColCriterion(fullMovieDetails, category)) {
-                        categoriesThisMovieFulfills++;
-                    }
-                }
-                
-                if (categoriesThisMovieFulfills > 1) {
+    // Filtrar solo las categorías de tipo director y criterio
+    const directors = selectedRowCategories.filter(cat => cat.tipo === 'director');
+    const criterios = selectedColCategories.filter(cat => cat.tipo === 'criterio');
+    
+    // Verificar si hay directores con criterios incompatibles
+    directors.forEach(director => {
+        if (Array.isArray(director.criterios_incompatibles)) {
+            criterios.forEach(criterio => {
+                const incompatible = director.criterios_incompatibles.find(c => c.id === criterio.id);
+                if (incompatible) {
                     conflicts.push({
                         director: director.nombre,
-                        movie: fullMovieDetails.title,
-                        categories: categoriesThisMovieFulfills
+                        criterio: criterio.nombre,
+                        message: `El director ${director.nombre} no puede cumplir con el criterio ${criterio.nombre}`
                     });
                 }
-            }
+            });
         }
-    }
+        
+        // Verificar parejas de criterios incompatibles
+        if (Array.isArray(director.criterios_parejas_incompatibles) && criterios.length >= 2) {
+            director.criterios_parejas_incompatibles.forEach(pareja => {
+                const criterio1 = criterios.find(c => c.id === pareja.criterio_id1);
+                const criterio2 = criterios.find(c => c.id === pareja.criterio_id2);
+                
+                if (criterio1 && criterio2) {
+                    conflicts.push({
+                        director: director.nombre,
+                        criterio: `${pareja.nombre1} + ${pareja.nombre2}`,
+                        message: `El director ${director.nombre} no puede cumplir simultáneamente con los criterios ${pareja.nombre1} y ${pareja.nombre2}`
+                    });
+                }
+            });
+        }
+    });
     
     return conflicts;
 }
-*/
 
 export function endGame(completed = false) {
     gameState.gameInProgress = false;

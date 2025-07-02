@@ -88,7 +88,9 @@ try {
          }
 
          // For directors, fetch their genres
+         // Para directores, obtener sus géneros y criterios incompatibles
          if ($type === 'director') {
+             // Obtener géneros (código existente)
              $stmtGenres = $pdo->prepare("
                  SELECT g.nombre
                  FROM director_genero dg
@@ -96,7 +98,28 @@ try {
                  WHERE dg.director_id = :director_id
              ");
              $stmtGenres->execute([':director_id' => $row['id']]);
-             $row['generos'] = $stmtGenres->fetchAll(PDO::FETCH_COLUMN); // Fetch only the genre names
+             $row['generos'] = $stmtGenres->fetchAll(PDO::FETCH_COLUMN);
+             
+             // Obtener criterios incompatibles (nuevo código)
+             $stmtCriterios = $pdo->prepare("
+                 SELECT c.id, c.nombre
+                 FROM director_criterio dc
+                 JOIN criterios c ON dc.criterio_id = c.id
+                 WHERE dc.director_id = :director_id
+             ");
+             $stmtCriterios->execute([':director_id' => $row['id']]);
+             $row['criterios_incompatibles'] = $stmtCriterios->fetchAll(PDO::FETCH_ASSOC);
+             
+             // Obtener parejas de criterios incompatibles
+             $stmtParejas = $pdo->prepare("
+                 SELECT dcp.criterio_id1, c1.nombre as nombre1, dcp.criterio_id2, c2.nombre as nombre2
+                 FROM director_criterio_pareja dcp
+                 JOIN criterios c1 ON dcp.criterio_id1 = c1.id
+                 JOIN criterios c2 ON dcp.criterio_id2 = c2.id
+                 WHERE dcp.director_id = :director_id
+             ");
+             $stmtParejas->execute([':director_id' => $row['id']]);
+             $row['criterios_parejas_incompatibles'] = $stmtParejas->fetchAll(PDO::FETCH_ASSOC);
          }
     }
     unset($row); // Unset reference after loop

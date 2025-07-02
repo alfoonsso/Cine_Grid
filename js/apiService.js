@@ -240,8 +240,11 @@ export class ApiService {
                 if (typeof pelicula.runtime !== 'number' || pelicula.runtime === 0 || pelicula.runtime >= 120) { console.log(`Validation Failed: Runtime ${pelicula.runtime} >= 120.`); return false; }
                 break;
             case "Título de 2h o más de duración":
-                 // Need runtime from full movie details - pelicula object should have it
-                if (typeof pelicula.runtime !== 'number' || pelicula.runtime === 0 || pelicula.runtime < 120) { console.log(`Validation Failed: Runtime ${pelicula.runtime} < 120.`); return false; }
+                // Verificar que runtime existe y es un número válido
+                if (typeof pelicula.runtime !== 'number' || isNaN(pelicula.runtime) || pelicula.runtime < 120) { 
+                    console.log(`Validation Failed: Runtime undefined < 120.`); 
+                    return false; 
+                }
                 break;
         }
 
@@ -249,17 +252,14 @@ export class ApiService {
         return true; // If all checks for the specific criterion passed
     }
 
-    // Método para obtener películas de un director - MOVER DENTRO DE LA CLASE
-    // Note: Removed validarTitulo, now use validarColCriterion
-    
-    /*
+    // Método para obtener películas de un director
     async getDirectorMovies(directorTmdbId) {
         try {
             const url = `${TMDB_BASE_URL}/person/${directorTmdbId}/movie_credits?api_key=${TMDB_API_KEY}`;
             const response = await fetch(url);
             
             if (!response.ok) {
-                console.error(`Error fetching director movies for ID ${directorTmdbId}`);
+                console.error(`Error fetching director movies for ID ${directorTmdbId}. Status: ${response.status}`);
                 return [];
             }
             
@@ -271,7 +271,6 @@ export class ApiService {
             return [];
         }
     }
-    */
 }
 
 // Exportar solo la instancia
