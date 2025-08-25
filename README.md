@@ -2,6 +2,10 @@
 
 Juego de cuadrícula de películas inspirado en "MovieGrid", donde los jugadores deben encontrar películas que cumplan con criterios específicos en una cuadrícula.
 
+## Ver app desplegada
+
+https://cine-grid.infinityfreeapp.com/
+
 ## Características
 
 - Búsqueda de películas usando la API de TMDB
