@@ -1,5 +1,11 @@
-const BACKEND_API_BASE_URL = '/mis-proyectos/cine-grid-v3.1/api'; // Ruta correcta para tu estructura de carpetas
-const TMDB_API_KEY = '98fd1e135ecfac794b25c1fe1d162ac8';
+// Detectar si estamos en producción o desarrollo
+const isProduction = window.location.hostname !== 'localhost';
+
+// Establecer la URL base según el entorno
+const BACKEND_API_BASE_URL = isProduction 
+    ? 'cine-grid.infinityfreeapp.com/htdocs/api/' // Ajusta esto según la estructura en tu servidor de producción
+    : '/mis-proyectos/cine-grid-v3.1/api';
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 export const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 export const TMDB_PERSON_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w300_and_h450_bestv2';
